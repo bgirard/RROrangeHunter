@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Configuration for the RR Orange behavior
+
+# Notify the following email address when a new replay
+# is ready for triaging.
+#export ORANGEHUNTER_EMAIL="test@gmail.com"
+# How to connect to the machine
+#export ORANGEHUNTER_SSH_ADDRESS="mozilla@orangehunter1.fantasytalesonline.com"
