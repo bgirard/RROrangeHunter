@@ -7,3 +7,8 @@
 #export ORANGEHUNTER_EMAIL="test@gmail.com"
 # How to connect to the machine
 #export ORANGEHUNTER_SSH_ADDRESS="mozilla@orangehunter1.fantasytalesonline.com"
+
+# Make sure we have enough free space for this replay
+export ORANGEHUNTER_MIN_SPACE=5120
+# Disk cap for untriage replay directories
+export ORANGEHUNTER_UNTRIAGE_SIZE=20480
