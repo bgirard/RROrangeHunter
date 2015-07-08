@@ -33,6 +33,12 @@ prepare_record() {
   python fetch-symbols.py firefox/ https://symbols.mozilla.org/firefox
 }
 
+result_line() {
+  echo "************************"
+  echo "  RR Run Result: $1"
+  echo "************************"
+}
+
 while true; do
 
   # clean up
@@ -65,8 +71,15 @@ while true; do
   source config.sh
 
   # prepare a new recording
-  mkdir -p "$WORK_DIR"
-  cd "$WORK_DIR"
+  #mkdir -p "$WORK_DIR"
+  #cd "$WORK_DIR"
+
+  # Work around for https://github.com/mozilla/rr/issues/1518,
+  # use the replay directory as the work direcory for now.
+  REPLAY_UUID=`uuidgen`
+  REPLAY_DIR="$UNTRIAGED_DIR"/"$REPLAY_UUID"
+  mkdir -p "$REPLAY_DIR"
+  cd "$REPLAY_DIR"
   prepare_record
 
   # record until we get a failure
@@ -74,22 +87,25 @@ while true; do
   while $WAIT_FAILURE; do
     rm -rf $PWD/rr-recording
     mkdir $PWD/rr-recording
-    _RR_TRACE_DIR=$PWD/rr-recording xvfb-run ./mach mochitest --run-until-failure --appname=./firefox/firefox --debugger=rr --debugger-args=-M dom/canvas | tee run.log
+    _RR_TRACE_DIR=$PWD/rr-recording xvfb-run ./mach mochitest --run-until-failure --appname=./firefox/firefox --debugger=rr --setpref gfx.xrender.enabled=false --debugger-args=-M dom/canvas | tee run.log
 
     # analyze the results
     LOG_TXT=`tail -n 50 run.log`
-    FAILURE_LINE=`grep TEST-UNEXPECTED run.log || true`
+    FAILURE_LINE=`grep TEST-UNEXPECTED run.log`
 
     if [ -n "$FAILURE_LINE" ]; then
       if [ -n "$ORANGEHUNTER_EMAIL" ]; then
-        echo -e "There is a replay ready for debugging: ssh $ORANGEHUNTER_SSH_ADDRESS\n\n$LOG_TXT" | mail $ORANGEHUNTER_EMAIL --subject="OrangeHunter: RR-Replay ready for ${FAILURE_LINE}"
+        # TODO Reformat this
+        echo -e "There is a replay ready for debugging:\n\nssh $ORANGEHUNTER_SSH_ADDRESS\ncd $REPLAY_DIR\nrr replay rr-recording/latest-trace\n\n$LOG_TXT" | mail $ORANGEHUNTER_EMAIL --subject="OrangeHunter: RR-Replay ready for ${FAILURE_LINE}"
       fi
       WAIT_FAILURE=false
+      result_line "Failure saved to $REPLAY_DIR"
+    else
+      result_line "No failure found, continuing"
     fi
   done
 
-  exit 1
   # move to untriaged
-  REPLAY_UUID=`uuidgen`
-  mv "$WORK_DIR" "$UNTRIAGED_DIR"/"$REPLAY_UUID"
+  # Can't move the replay for now: https://github.com/mozilla/rr/issues/1518
+  # mv "$WORK_DIR" "$UNTRIAGED_DIR"/"$REPLAY_UUID"
 done
