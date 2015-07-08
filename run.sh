@@ -88,6 +88,7 @@ while true; do
     fi
   done
 
+  exit 1
   # move to untriaged
   REPLAY_UUID=`uuidgen`
   mv "$WORK_DIR" "$UNTRIAGED_DIR"/"$REPLAY_UUID"
