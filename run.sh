@@ -74,7 +74,7 @@ while true; do
   while $WAIT_FAILURE; do
     rm -rf $PWD/rr-recording
     mkdir $PWD/rr-recording
-    _RR_TRACE_DIR=$PWD/rr-recording xvfb-run ./mach mochitest --run-until-failure --appname=./firefox/firefox --debugger=rr dom/canvas | tee run.log
+    _RR_TRACE_DIR=$PWD/rr-recording xvfb-run ./mach mochitest --run-until-failure --appname=./firefox/firefox --debugger=rr --debugger-args=-M dom/canvas | tee run.log
 
     # analyze the results
     LOG_TXT=`tail -n 50 run.log`
