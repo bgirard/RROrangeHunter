@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 
 if [ ! -e config.sh ]; then
   echo "Must setup config.sh first."
@@ -87,11 +88,12 @@ while true; do
   while $WAIT_FAILURE; do
     rm -rf $PWD/rr-recording
     mkdir $PWD/rr-recording
-    _RR_TRACE_DIR=$PWD/rr-recording xvfb-run ./mach mochitest --run-until-failure --appname=./firefox/firefox --debugger=rr --setpref gfx.xrender.enabled=false --debugger-args=-M dom/canvas | tee run.log
+    # --run-until-failure
+    _RR_TRACE_DIR=$PWD/rr-recording xvfb-run ./mach mochitest --appname=./firefox/firefox --debugger=rr --setpref gfx.xrender.enabled=false --debugger-args=-M --repeat 50 docshell/test/navigation/test_sessionhistory.html | tee run.log
 
     # analyze the results
     LOG_TXT=`tail -n 50 run.log`
-    FAILURE_LINE=`grep TEST-UNEXPECTED run.log`
+    FAILURE_LINE=`grep TEST-UNEXPECTED run.log | cat`
 
     if [ -n "$FAILURE_LINE" ]; then
       if [ -n "$ORANGEHUNTER_EMAIL" ]; then
