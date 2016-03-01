@@ -12,15 +12,16 @@ DEBUGGER_ARGS="--debugger-args= record -M -V -h"
 CHUNK="--total-chunks 5 --this-chunk 2"
 SUITE=reftest
 #TESTS=image/test/reftest/bmp/bmpsuite/b
-RUN_UNTIL_FAILURE="--run-until-failure"
+RUN_UNTIL_FAILURE="--repeat 50 --run-until-failure"
 export MOZ_CHAOSMODE=true
 
-export _RR_TRACE_DIR="$PWD/rr-recording"
+export _RR_TRACE_DIR="$PWD/rr-recording_$(date +%Y-%m-%d.%H:%M:%S)"
 
 while true; do
   # Setup
   rm -rf $_RR_TRACE_DIR
   mkdir $_RR_TRACE_DIR
+  touch "$_RR_TRACE_DIR/notes"
   ./mach mercurial-setup --update-only
 
   # Pick a test to run

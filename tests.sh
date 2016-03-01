@@ -5,7 +5,9 @@
 # and then pick another test until a replay is produced.
 HUNT_TESTS=(
    reftest layout/reftests/font-features/subsuper-fallback.html
-   reftest layout/reftests/font-features/subsuper-fallback.html2
+   mochitest dom/media/tests/mochitest/test_peerConnection_trackDisabling.html
+   mochitest toolkit/mozapps/extensions/test/xpinstall/browser_navigateaway3.js
+   mochitest browser/base/content/test/general/browser_tabs_close_beforeunload.js
 )
 
 HUNT_TESTS_SIZE=$(expr ${#HUNT_TESTS[@]} / 2)
