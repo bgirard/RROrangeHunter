@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 set -xe
 
 # Kill background (&) jobs
@@ -14,12 +16,24 @@ RUN_UNTIL_FAILURE="--run-until-failure"
 export MOZ_CHAOSMODE=true
 
 export _RR_TRACE_DIR="$PWD/rr-recording"
-rm -rf $_RR_TRACE_DIR
-mkdir $_RR_TRACE_DIR
 
 while true; do
-  # POS!
+  # Setup
+  rm -rf $_RR_TRACE_DIR
+  mkdir $_RR_TRACE_DIR
   ./mach mercurial-setup --update-only
+
+  # Pick a test to run
+  source "$DIR/tests.sh"
+  echo ${HUNT_TESTS_SIZE}
+  TEST_ID=$[ RANDOM % ${HUNT_TESTS_SIZE} ]
+  TEST_ID=0
+  echo TEST_ID $TEST_ID
+  SUITE=${HUNT_TESTS[$[${TEST_ID} * 2]]}
+  TESTS=${HUNT_TESTS[$[${TEST_ID} * 2 + 1]]}
+  echo Running: $SUITE $TESTS
+
+  # Run the test
   #Xvfb :99 -screen 0 1280x1024x24 &
   #sleep 5
   #avconv -y -r 30 -g 300 -f x11grab -s 1280x1024 -i :99 -vcodec qtrle out.mov &
