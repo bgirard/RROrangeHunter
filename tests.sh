@@ -8,6 +8,7 @@ HUNT_TESTS=(
    mochitest dom/media/tests/mochitest/test_peerConnection_trackDisabling.html
    mochitest toolkit/mozapps/extensions/test/xpinstall/browser_navigateaway3.js
    mochitest browser/base/content/test/general/browser_tabs_close_beforeunload.js
+   mochitest dom/push/test
 )
 
 HUNT_TESTS_SIZE=$(expr ${#HUNT_TESTS[@]} / 2)
